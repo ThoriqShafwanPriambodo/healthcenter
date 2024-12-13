@@ -30,7 +30,7 @@ class M_poligigi extends CI_Model
 
     public function get_poli_data()
     {
-        $sql = "SELECT * FROM polyclinic WHERE polyclinicId = 3 ORDER BY polyclinicId DESC";
+        $sql = "SELECT * FROM polyclinic WHERE polyclinicId = 3";
         $query = $this->db->query($sql);
         return $query->result();
     }
@@ -42,7 +42,6 @@ class M_poligigi extends CI_Model
             SET queuesStatus = CASE 
                 WHEN queuesStatus = 0 THEN 1   -- Jika 0, set jadi 1
                 WHEN queuesStatus = 1 THEN 2   -- Jika 1, set jadi 2
-                WHEN queuesStatus = 2 THEN 0   -- Jika 2, set jadi 0
                 ELSE queuesStatus              -- Jika tidak ada, biarkan tetap
             END 
             WHERE queuesId = '$id'";

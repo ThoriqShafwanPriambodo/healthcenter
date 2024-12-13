@@ -29,9 +29,19 @@
                             </div>
                             <div class="col-md-6 mb-4">
                                 <div class="form-group">
-                                    <label>Nama Pasien</label>
+                                    <label>NIK</label>
                                     <fieldset class="form-group">
                                         <select class="form-select" id="txpasien">
+                                        </select>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>Nama</label>
+                                    <fieldset class="form-group" disabled>
+                                        <select class="form-select" id="txnama">
+                                            <option value="">Nama Pasien</option>
                                         </select>
                                     </fieldset>
                                 </div>

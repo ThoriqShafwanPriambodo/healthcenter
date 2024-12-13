@@ -3679,9 +3679,9 @@ html[data-bs-theme=dark] .form-control::file-selector-button {
     }
 }
 
-html[data-bs-theme=dark] .form-control:hover:not(:disabled):not([readonly])::file-selector-button {
+/* html[data-bs-theme=dark] .form-control:hover:not(:disabled):not([readonly])::file-selector-button {
     background-color: #dbe2e9
-}
+} */
 
 html[data-bs-theme=dark] .form-control-plaintext {
     display: block;

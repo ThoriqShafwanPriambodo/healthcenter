@@ -1,6 +1,18 @@
 function reset_form() {
+    // Panggil fungsi untuk memuat data pasien dan poli
     load_patient();
     load_poli();
+
+    // Kosongkan elemen txnama dan tambahkan opsi default
+    const $txnama = $("#txnama");
+    $txnama.empty();
+    $txnama.append('<option value="">Nama Pasien</option>');
+
+    // Jika menggunakan Choices.js, re-initialize setelah reset
+    if (txnamaChoices) {
+        txnamaChoices.destroy();
+    }
+    txnamaChoices = new Choices($txnama[0]);
 }
 
 function load_poligizi() {
@@ -50,20 +62,25 @@ function load_poligizi() {
 }
 
 let txpasienChoices;
+let txnamaChoices;
+let patientData = []; // Array untuk menyimpan data pasien
+
 function load_patient() {
-    $.post("poligizi/load_patient", function (res) {
+    $.post("poliumum/load_patient", function (res) {
         console.log("Respon server:", res); // Debugging: Melihat data yang diterima dari server
         if (res && res.patient && Array.isArray(res.patient)) {
+            patientData = res.patient; // Simpan data pasien
+
             const $txpasien = $("#txpasien");
             $txpasien.empty(); // Kosongkan dropdown
 
             // Tambahkan opsi default
-            $txpasien.append('<option value="">Pilih Pasien</option>');
+            $txpasien.append('<option value="">Pilih NIK</option>');
 
             // Tambahkan opsi dari data pasien
             $.each(res.patient, function (i, v) {
                 $txpasien.append(
-                    '<option value="' + v.patientId + '">' + v.patientName + "</option>"
+                    '<option value="' + v.patientId + '">' + v.patientNik + "</option>"
                 );
             });
 
@@ -72,10 +89,33 @@ function load_patient() {
                 txpasienChoices.destroy();
             }
             txpasienChoices = new Choices($txpasien[0]);
+
+            // Panggil fungsi untuk mengatur event listener
+            nama();
         } else {
             console.error("Respon server tidak valid:", res);
         }
     }, "json");
+}
+
+function nama() {
+    const $txnama = $("#txnama");
+    $('#txpasien').on('change', function () {
+        const selectedPatientId = $(this).val();
+        const matchedPatient = patientData.find(patient => patient.patientId === selectedPatientId);
+        $txnama.empty(); // Kosongkan dropdown nama
+        if (matchedPatient) {
+            $txnama.append('<option value="' + matchedPatient.patientId + '">' + matchedPatient.patientName + '</option>');
+        } else {
+            $txnama.append('<option value="">Nama Pasien</option>');
+        }
+
+        // Re-initialize Choices.js jika digunakan
+        if (txnamaChoices) {
+            txnamaChoices.destroy();
+        }
+        txnamaChoices = new Choices($txnama[0]);
+    });
 }
 
 let txpoliChoices;
@@ -168,8 +208,7 @@ function status_data(id, status) {
         actionText = "Pasien sedang dilayani?";
         confirmButtonText = "Ya, Dilayani";
     } else if (status == 2) {
-        actionText = "Pasien harus menunggu kembali?";
-        confirmButtonText = "Ya, Kembalikan";
+        return;
     }
 
     // Konfirmasi dengan SweetAlert
@@ -219,7 +258,7 @@ $(document).ready(function () {
         }
     });
     $(".tittle").html("Poliklinik Gizi - HealthCenter");
-    $(".page-title").html("Poliklinik Gzi");
+    $(".page-title").html("Poliklinik Gizi");
     $(".btn-add").click(function () {
         $(".btn-submit").show();
         $(".btn-editen").hide();

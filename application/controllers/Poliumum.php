@@ -42,7 +42,20 @@ class Poliumum extends CI_Controller
         $queuesPolyclinicId = $this->input->post('poli');
         $queuesPatientId = $this->input->post('nama');
 
-        $sql = "SELECT IFNULL(
+        // Cek apakah pasien dengan queuesStatus 0 atau 1 sudah terdaftar
+        $query = $this->db->query("SELECT COUNT(*) as count FROM queues WHERE queuesPatientId = '{$queuesPatientId}' AND queuesPolyclinicId = '{$queuesPolyclinicId}' AND queuesStatus IN (0,1)");
+        $result = $query->row();
+
+        if ($result->count > 0) {
+            // Ambil nama pasien untuk pesan error
+            $patientNameQuery = "SELECT patientName FROM patient WHERE patientId = '{$queuesPatientId}'";
+            $patientName = $this->db->query($patientNameQuery)->row()->patientName;
+
+            $res['status'] = 'error';
+            $res['msg'] = "{$patientName} sudah terdaftar";
+        } else {
+            // Proses pembuatan nomor antrian baru
+            $sql = "SELECT IFNULL(
             (
                 SELECT CONCAT(
                     'UM/', 
@@ -59,21 +72,21 @@ class Poliumum extends CI_Controller
             CONCAT('UM/', DATE_FORMAT(CURRENT_DATE(), '%m%d'), '/001')
         ) AS no_trans;";
 
-        $no_trans = $this->db->query($sql)->row()->no_trans;
-        $sql2 = "INSERT INTO queues (queuesPolyclinicId, queuesPatientId, queuesNo, queuesRegTime) VALUES ('{$queuesPolyclinicId}','{$queuesPatientId}','{$no_trans}', NOW())";
-        $exc = $this->db->query($sql2);
+            $no_trans = $this->db->query($sql)->row()->no_trans;
+            $sql2 = "INSERT INTO queues (queuesPolyclinicId, queuesPatientId, queuesNo, queuesRegTime) VALUES ('{$queuesPolyclinicId}','{$queuesPatientId}','{$no_trans}', NOW())";
+            $exc = $this->db->query($sql2);
 
-        if ($exc) {
-            $patientNameQuery = "SELECT patientName FROM patient WHERE patientId = '{$queuesPatientId}'";
-            $patientName = $this->db->query($patientNameQuery)->row()->patientName;
-                
-            $res['status'] = 'success';
-            $res['msg'] = "{$patientName} berhasil ditambahkan ke antrian";
-        } else {
-            $res['status'] = 'error';
-            $res['msg'] = "Pasien gagal ditambahkan ke antrian";
+            if ($exc) {
+                $patientNameQuery = "SELECT patientName FROM patient WHERE patientId = '{$queuesPatientId}'";
+                $patientName = $this->db->query($patientNameQuery)->row()->patientName;
+
+                $res['status'] = 'success';
+                $res['msg'] = "{$patientName} berhasil ditambahkan ke antrian";
+            } else {
+                $res['status'] = 'error';
+                $res['msg'] = "Pasien gagal ditambahkan ke antrian";
+            }
         }
-
         echo json_encode($res);
     }
 
