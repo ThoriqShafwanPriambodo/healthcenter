@@ -82,7 +82,7 @@
 
                         <li class="sidebar-item">
                             <a href="<?php echo base_url('patient'); ?>" class='sidebar-link'>
-                                <i class="fa-solid fa-wheelchair"></i>
+                                <i class="fa-solid fa-bed"></i>
                                 <span>Pasien</span>
                             </a>
                         </li>

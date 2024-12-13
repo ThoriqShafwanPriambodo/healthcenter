@@ -8,7 +8,7 @@
                         <div class="row d-flex align-items-center justify-content-center">
                             <div class="col-md-3 d-flex justify-content-center align-items-center">
                                 <div class="stats-icon purple">
-                                    <i class="fa-solid fa-wheelchair"></i>
+                                    <i class="fa-solid fa-bed"></i>
                                 </div>
                             </div>
                             <div class="col-md-6">
